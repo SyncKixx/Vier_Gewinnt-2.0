@@ -1,0 +1,38 @@
+.container{
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+table{
+  border: 5px solid skyblue;
+  background-color: skyblue;
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  border-spacing: 10px;
+}
+button{
+  align-self: auto;
+  border: none;
+  border-radius: 100%;
+  height: 50px;
+  width: 50px;
+  margin: 0;
+}
+td{
+  border-radius: 100%;
+  height: 50px;
+  width: 50px;
+  margin: 0;
+}
+.unplayed{
+  background-color: white;
+}
+.player1{
+  background-color: red;
+}
+.player2{
+  background-color: yellow;
+}
+
+

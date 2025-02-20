@@ -1,0 +1,20 @@
+<app-header>
+</app-header>
+<div class="container">
+<table id="tabelle">
+
+  @for (zeile of zeilen; track $index; let rowindex = $index)
+  {
+   <tr>
+      @for(spalte of spalten; track $index; let coloumnindex = $index){
+        <td>
+        <button (click)="Steinsetzen(coloumnindex,rowindex)" [ngClass]="aktuelleklasse" [disabled]="spielVorbei || spielfeld[rowindex][coloumnindex] !== 0">
+        1
+        </button>
+        </td>
+      }
+   </tr>
+  }
+</table>
+</div>
+
