@@ -7,10 +7,7 @@
   {
    <tr>
       @for(spalte of spalten; track $index; let coloumnindex = $index){
-        <td>
-        <button (click)="Steinsetzen(coloumnindex,rowindex)" [ngClass]="aktuelleklasse" [disabled]="spielVorbei || spielfeld[rowindex][coloumnindex] !== 0">
-        1
-        </button>
+        <td (click)="Steinsetzen(coloumnindex,rowindex)">
         </td>
       }
    </tr>
