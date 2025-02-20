@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 export class AppComponent {
   title = 'Vier_Gewinnt-2.0';
   aktuelleklasse = 'player';
-  currentSpieler:number = 2;
+  currentSpieler:number = 1;
   spalten: number[] = Array(7).fill(0); // 7 Spalten
   zeilen: number[] = Array(6).fill(0); // 6 Zeilen
   spielfeld: number[][] = Array(6).fill(null).map(() => Array(7).fill(0)); // 6x7-Array für das Spielfeld
@@ -36,6 +36,7 @@ export class AppComponent {
       if(r >= 0){
         this.spielfeld[r][column] = this.currentSpieler;
         Tabelle.children[r].children[column].classList.add(this.aktuelleklasse+this.currentSpieler);
+        console.log(this.spielfeld);
         //this.checkWinner();
         this.currentSpieler = 3 -this.currentSpieler;
       }
