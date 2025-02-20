@@ -11,32 +11,35 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent {
   title = 'Vier_Gewinnt-2.0';
-  aktuelleklasse = 'unplayed';
-  currentSpieler:number = 1;
+  aktuelleklasse = 'player';
+  currentSpieler:number = 2;
   spalten: number[] = Array(7).fill(0); // 7 Spalten
   zeilen: number[] = Array(6).fill(0); // 6 Zeilen
   spielfeld: number[][] = Array(6).fill(null).map(() => Array(7).fill(0)); // 6x7-Array für das Spielfeld
   spielVorbei: boolean = false;
 
   Steinsetzen(column:number,row: number){
-    console.log(column,row);
-    if(this.spielVorbei || this.spielfeld[row][column])//Wenn spielVorbei ist true oder spielfeld platz belegt ist
-    {
-      return; //gehe zurück der zug ist ungültig
+    let Tabelle = document.getElementById('tabelle');
+    if(Tabelle != null){
+      console.log(column,row);
+      if(this.spielVorbei || this.spielfeld[row][column])//Wenn spielVorbei ist true oder spielfeld platz belegt ist
+      {
+        return; //gehe zurück der zug ist ungültig
+      }
+
+      let r = 5;//index der höchsten reihe in r deklarieren
+      while(r>= 0 && this.spielfeld[r][column] !== 0)//solange r gößer als 0 UND spielfeld r column ungleich number:0
+      {
+        r--
+      }
+
+      if(r >= 0){
+        this.spielfeld[r][column] = this.currentSpieler;
+        Tabelle.children[r].children[column].classList.add(this.aktuelleklasse+this.currentSpieler);
+        //this.checkWinner();
+        this.currentSpieler = 3 -this.currentSpieler;
+      }
     }
 
-    let r = 5;//index der höchsten reihe in r deklarieren
-    while(r>= 0 && this.spielfeld[r][column] !== 0)//solange r gößer als 0 UND spielfeld r column ungleich number:0
-    {
-      r--
-    }
-
-    if(r >= 0){
-      this.spielfeld[r][column] = this.currentSpieler;
-      this.aktuelleklasse = "player1"
-      //this.checkWinner();
-      this.currentSpieler = 3 -this.currentSpieler;
-    }
   }
 }
-//Also das ist hier jetzt einfach nur ein test
