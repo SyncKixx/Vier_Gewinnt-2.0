@@ -38,20 +38,26 @@ export class AppComponent {
         this.spielfeld[r][column] = this.currentSpieler;
         Tabelle.children[r].children[column].classList.add(this.aktuelleklasse+this.currentSpieler);
         console.log(this.spielfeld);
+        console.log(this.aktuelleklasse);
         this.checkWinner();
-        if(this.winner != 0){
-          this.ResetGame(this.winner);
-        }
         this.currentSpieler = 3 -this.currentSpieler;
 
       }
     }
   }
   ResetGame(StartPlayer: number){
-    let Tabelle = document.getElementById("tabelle")
-    this.aktuelleklasse = "td";
-    this.winner = StartPlayer;
+    let Tabelle = document.getElementById("tabelle");
+    Tabelle?.querySelectorAll("td").forEach((td) => {
+      td.classList.remove("player1");
+      td.classList.remove("player2");
+      td.classList.add("td");
+    }
+    );
+
     this.spielfeld = Array(6).fill(null).map(() => Array(7).fill(0));
+    this.spielVorbei = false;
+    this.winner = 0;
+    this.currentSpieler = 1;
 
   }
     checkWinner(){
