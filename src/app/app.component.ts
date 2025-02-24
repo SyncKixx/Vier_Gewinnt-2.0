@@ -20,12 +20,12 @@ export class AppComponent {
   spielVorbei: boolean = false;
 
   Steinsetzen(column:number,row: number){
-    let Tabelle = document.getElementById('tabelle');
+    let Tabelle = document.getElementById('tabelle');// Tabelle mit id finden um html zu bearbeiten
     if(Tabelle != null){
       console.log(column,row);
       if(this.spielVorbei || this.spielfeld[row][column])//Wenn spielVorbei ist true oder spielfeld platz belegt ist
       {
-        return; //gehe zurück der zug ist ungültig
+        return; //gehe zurück und tue nix. der zug ist ungültig wird aber nicht beendet
       }
 
       let r = 5;//index der höchsten reihe in r deklarieren
