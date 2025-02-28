@@ -1,6 +1,7 @@
 import { Component, Input, Output } from '@angular/core';
 import { HeaderComponent } from "./header/header.component";
 import { CommonModule } from '@angular/common';
+import { SpielKiService } from './spiel-ki.service';
 
 
 @Component({
@@ -16,13 +17,16 @@ export class AppComponent {
   currentSpieler:number = 1;
   spalten: number[] = Array(7).fill(0); // 7 Spalten
   zeilen: number[] = Array(6).fill(0); // 6 Zeilen
-  spielfeld: number[][] = Array(6).fill(null).map(() => Array(7).fill(0)); // 6x7-Array für das Spielfeld
+  public spielfeld: number[][] = Array(6).fill(null).map(() => Array(7).fill(0)); // 6x7-Array für das Spielfeld
   spielVorbei: boolean = false;
 
+  constructor(public spielKiService: SpielKiService){}
+
+
   Steinsetzen(column:number,row: number){
+
     let Tabelle = document.getElementById('tabelle');// Tabelle mit id finden um html zu bearbeiten
     if(Tabelle != null){
-      console.log(column,row);
       if(this.spielVorbei || this.spielfeld[row][column])//Wenn spielVorbei ist true oder spielfeld platz belegt ist
       {
         return; //gehe zurück und tue nix. der zug ist ungültig wird aber nicht beendet
@@ -37,12 +41,13 @@ export class AppComponent {
       if(r >= 0){
         this.spielfeld[r][column] = this.currentSpieler;
         Tabelle.children[r].children[column].classList.add(this.aktuelleklasse+this.currentSpieler);
-        console.log(this.spielfeld);
-        console.log(this.aktuelleklasse);
         this.checkWinner();
         this.currentSpieler = 3 -this.currentSpieler;
 
       }
+    }
+    if(this.currentSpieler == 2 && !this.spielVorbei){
+      this.spielKiService.BewerteMax(this.spielfeld);
     }
   }
   ResetGame(StartPlayer: number){
