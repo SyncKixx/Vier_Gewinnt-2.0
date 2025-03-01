@@ -1,19 +1,21 @@
 <app-header>
 </app-header>
+@if(gamemode != 0){
 <div class="container">
   <table id="tabelle">
 
-  @for (zeile of zeilen; track $index; let rowindex = $index)
-  {
-    <tr>
-      @for(spalte of spalten; track $index; let coloumnindex = $index){
-        <td (click)="Steinsetzen(coloumnindex,rowindex)">
-        </td>
-      }
-    </tr>
-  }
-  </table>
-</div>
+    @for (zeile of zeilen; track $index; let rowindex = $index)
+    {
+      <tr>
+        @for(spalte of spalten; track $index; let coloumnindex = $index){
+          <td (click)="Steinsetzen(coloumnindex,rowindex)">
+          </td>
+        }
+      </tr>
+    }
+    </table>
+  </div>
+}
 @if(winner != 0){
   <div class="WinMessage">
     Spieler {{winner}} hat Gewonnen

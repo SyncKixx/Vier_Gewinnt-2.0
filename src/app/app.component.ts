@@ -1,4 +1,4 @@
-import { Component, Input, Output } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { HeaderComponent } from "./header/header.component";
 import { CommonModule } from '@angular/common';
 import { SpielKiService } from './spiel-ki.service';
@@ -11,14 +11,34 @@ import { SpielKiService } from './spiel-ki.service';
   imports: [HeaderComponent, CommonModule,],
 })
 export class AppComponent {
+  @ViewChild(HeaderComponent) headerComponent: HeaderComponent | undefined;
+
   title = 'Vier_Gewinnt-2.0';
   aktuelleklasse = 'player';
+  gamemode: number = 0;
   winner = 0;
   currentSpieler:number = 1;
   spalten: number[] = Array(7).fill(0); // 7 Spalten
   zeilen: number[] = Array(6).fill(0); // 6 Zeilen
   public spielfeld: number[][] = Array(6).fill(null).map(() => Array(7).fill(0)); // 6x7-Array für das Spielfeld
   spielVorbei: boolean = false;
+
+  ngAfterViewInit(): void {
+    if (this.headerComponent){
+      this.headerComponent.gameModeChange.subscribe((gameMode: number) => {
+        this.gamemode = gameMode;//this.gamemode 0
+        if(gameMode == 0){
+          this.ResetGame(1);
+        }
+      });
+    } 
+    else {
+      console.error("HeaderComponent nicht gefunden!");
+    }
+    return;
+  }
+
+
 
   constructor(public spielKiService: SpielKiService){}
 
@@ -51,6 +71,7 @@ export class AppComponent {
     }
   }
   ResetGame(StartPlayer: number){
+    
     let Tabelle = document.getElementById("tabelle");
     Tabelle?.querySelectorAll("td").forEach((td) => {
       td.classList.remove("player1");
@@ -58,6 +79,7 @@ export class AppComponent {
       td.classList.add("td");
     }
     );
+
 
     this.spielfeld = Array(6).fill(null).map(() => Array(7).fill(0));
     this.spielVorbei = false;

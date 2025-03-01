@@ -4,4 +4,12 @@
     <h1>Vier Gewinnt</h1>
     <p>Der klügere Gewinnt</p>
   </div>
+  @if(gameMode == 0){
+    <button (click)="onGameModeChange(1)">Spieler VS. COM</button>
+    <button (click)="onGameModeChange(2)">Spieler VS. Spieler</button>
+  }
+  @else {
+    <p>{{gameModestr}}</p>
+    <button (click)="onGameModeChange(0)">Restart</button>
+  }
 </header>
