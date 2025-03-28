@@ -1,7 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { HeaderComponent } from "./header/header.component";
 import { CommonModule } from '@angular/common';
-import { SpielKiService } from './spiel-ki.service';
 
 
 @Component({
@@ -28,25 +27,22 @@ export class AppComponent {
       this.headerComponent.gameModeChange.subscribe((gameMode: number) => {
         this.gamemode = gameMode;//this.gamemode 0
         if(gameMode == 0){
-          this.ResetGame(1);
+          this.ResetGame();
         }
       });
-    } 
+    }
     else {
       console.error("HeaderComponent nicht gefunden!");
     }
+   // console.log(this.spielfeld);
     return;
   }
-
-
-
-  constructor(public spielKiService: SpielKiService){}
 
 
   Steinsetzen(column:number,row: number){
 
     let Tabelle = document.getElementById('tabelle');// Tabelle mit id finden um html zu bearbeiten
-    if(Tabelle != null){
+    if(Tabelle != null && Tabelle != undefined){
       if(this.spielVorbei || this.spielfeld[row][column])//Wenn spielVorbei ist true oder spielfeld platz belegt ist
       {
         return; //gehe zurück und tue nix. der zug ist ungültig wird aber nicht beendet
@@ -58,20 +54,99 @@ export class AppComponent {
         r--
       }
 
-      if(r >= 0){
+
+      //spielstein setzen equal to drop piece
+      if(r >= 0 && this.currentSpieler == 1 || r>= 0 && this.currentSpieler == 2 && this.gamemode == 2){
         this.spielfeld[r][column] = this.currentSpieler;
         Tabelle.children[r].children[column].classList.add(this.aktuelleklasse+this.currentSpieler);
-        this.checkWinner();
-        this.currentSpieler = 3 -this.currentSpieler;
+        if(this.checkWin(this.currentSpieler)){
+          this.winner = this.currentSpieler;
+          this.spielVorbei = true;
+        }
 
+        if(this.gamemode == 1){
+          this.currentSpieler = 3 -this.currentSpieler;
+        }
       }
     }
-    if(this.currentSpieler == 2 && !this.spielVorbei){
-      this.spielKiService.BewerteMax(this.spielfeld);
+    if(this.currentSpieler == 2 && !this.spielVorbei && this.gamemode == 1){
+      console.log("KI ist am Zug"+this.currentSpieler);
+      let bestMove = this.findBestMove()
+      let r = this.getLowestEmptyRow(bestMove);
+      Tabelle?.children[r].children[bestMove].classList.add(this.aktuelleklasse+this.currentSpieler);
+      this.spielfeld[this.getLowestEmptyRow(bestMove)][bestMove] = this.currentSpieler;
+      if(this.checkWin(this.currentSpieler)){
+        this.winner = this.currentSpieler;
+        this.spielVorbei = true;
+      }
+    }
+    this.currentSpieler = 3 -this.currentSpieler;
+    console.log(this.spielfeld);
+
+  }
+
+  checkWin(player: number): boolean {
+  // Horizontal
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 4; col++) {
+      if (this.spielfeld[row][col] == player &&
+          this.spielfeld[row][col + 1] == player &&
+          this.spielfeld[row][col + 2] == player &&
+          this.spielfeld[row][col + 3] == player) {
+            console.log(row + " " + col);
+            console.log(this.spielfeld[row][col], this.spielfeld[row][col + 1], this.spielfeld[row][col + 2], this.spielfeld[row][col + 3]);
+            console.log("horizontal");
+        return true;
+      }
     }
   }
-  ResetGame(StartPlayer: number){
-    
+
+  // Vertikal
+  for (let row = 0; row < 3; row++) {
+    for (let col = 0; col < 7; col++) {
+      if (this.spielfeld[row][col] === player &&
+          this.spielfeld[row + 1][col] === player &&
+          this.spielfeld[row + 2][col] === player &&
+          this.spielfeld[row + 3][col] === player) {
+            console.log("vertikal");
+        return true;
+      }
+    }
+  }
+
+  // Diagonal (/)
+  for (let row = 0; row < 3; row++) {
+    for (let col = 0; col < 4; col++) {
+      if (this.spielfeld[row + 3][col] === player &&
+          this.spielfeld[row + 2][col + 1] === player &&
+          this.spielfeld[row + 1][col + 2] === player &&
+          this.spielfeld[row][col + 3] === player) {
+            console.log("diagonal nach oben");
+        return true;
+      }
+    }
+  }
+
+  // Diagonal (\)
+  for (let row = 0; row < 3; row++) {
+    for (let col = 0; col < 4; col++) {
+      if (this.spielfeld[row][col] === player &&
+          this.spielfeld[row + 1][col + 1] === player &&
+          this.spielfeld[row + 2][col + 2] === player &&
+          this.spielfeld[row + 3][col + 3] === player) {
+            console.log("diagonal nach unten");
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+
+
+  ResetGame(){
+
     let Tabelle = document.getElementById("tabelle");
     Tabelle?.querySelectorAll("td").forEach((td) => {
       td.classList.remove("player1");
@@ -87,53 +162,131 @@ export class AppComponent {
     this.currentSpieler = 1;
 
   }
-    checkWinner(){
-      for (let r = 0; r < 6; r++) {
-        for (let c = 0; c < 4; c++) {
-          if (this.checkLine(this.spielfeld[r][c], this.spielfeld[r][c + 1], this.spielfeld[r][c + 2], this.spielfeld[r][c + 3])) {
-            this.spielVorbei = true;
-            this.winner = this.spielfeld[r][c];
-            return;
-          }
-        }
-      }
 
-      // Überprüfe vertikal
-      for (let c = 0; c < 7; c++) {
-        for (let r = 0; r < 3; r++) {
-          if (this.checkLine(this.spielfeld[r][c], this.spielfeld[r + 1][c], this.spielfeld[r + 2][c], this.spielfeld[r + 3][c])) {
-            this.spielVorbei = true;
-            this.winner = this.spielfeld[r][c];
-            return;
-          }
-        }
-      }
-
-      // Überprüfe diagonal (links unten nach rechts oben)
-      for (let r = 3; r < 6; r++) {
-        for (let c = 0; c < 4; c++) {
-          if (this.checkLine(this.spielfeld[r][c], this.spielfeld[r - 1][c + 1], this.spielfeld[r - 2][c + 2], this.spielfeld[r - 3][c + 3])) {
-            this.spielVorbei = true;
-            this.winner = this.spielfeld[r][c];
-            return;
-          }
-        }
-      }
-
-      // Überprüfe diagonal (links oben nach rechts unten)
-      for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 4; c++) {
-          if (this.checkLine(this.spielfeld[r][c], this.spielfeld[r + 1][c + 1], this.spielfeld[r + 2][c + 2], this.spielfeld[r + 3][c + 3])) {
-            this.spielVorbei = true;
-            this.winner = this.spielfeld[r][c];
-            return;
-          }
-        }
-      }
-    }
 
     checkLine(a: number, b: number, c: number, d: number): boolean {
       return a !== 0 && a === b && a === c && a === d;
     }
+
+    //-----------------------------------KI ABTEILUNG--------------------------------------------------------
+    findBestMove(): number {
+      let bestScore = -Infinity;
+      let bestMove = -1;
+      let board = this.spielfeld;
+
+      if(board != undefined){
+      for (let col = 0; col < 7; col++) {
+        if (board[0][col] === 0) { // Wenn Spalte nicht voll ist
+          const row = this.getLowestEmptyRow(col);
+          board[row][col] = 2;
+
+          const score = this.minimax(board, 4, false);
+
+          board[row][col] = 0;
+
+          if (score > bestScore) {
+            bestScore = score;
+            bestMove = col;
+          }
+        }
+      }
+      }
+      return bestMove;
+    }
+
+    minimax(board: number[][], depth: number, isMaximizing: boolean): number {
+      if (depth === 0) return this.evaluateBoard(board);
+      if (this.checkWin(2)) return 1000;
+      if (this.checkWin(1)) return -1000;
+
+      if (isMaximizing) {
+        let maxScore = -Infinity;
+        for (let col = 0; col < 7; col++) {
+          if (board[0][col] === 0) {
+            const row = this.getLowestEmptyRow(col);
+            board[row][col] = 2;
+            maxScore = Math.max(maxScore, this.minimax(board, depth - 1, false));
+            board[row][col] = 0;
+          }
+        }
+        return maxScore;
+      } else {
+        let minScore = Infinity;
+        for (let col = 0; col < 7; col++) {
+          if (board[0][col] === 0) {
+            const row = this.getLowestEmptyRow(col);
+            board[row][col] = 1;
+            minScore = Math.min(minScore, this.minimax(board, depth - 1, true));
+            board[row][col] = 0;
+          }
+        }
+        return minScore;
+      }
+    }
+
+    evaluateBoard(board: number[][]): number {
+      let score = 0;
+
+      // Bewerte horizontale Sequenzen
+      for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 4; col++) {
+          score += this.evaluateSequence(
+            board[row][col],
+            board[row][col + 1],
+            board[row][col + 2],
+            board[row][col + 3]
+          );
+        }
+      }
+
+      // Bewerte vertikale Sequenzen
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 7; col++) {
+          score += this.evaluateSequence(
+            board[row][col],
+            board[row + 1][col],
+            board[row + 2][col],
+            board[row + 3][col]
+          );
+        }
+      }
+
+      return score;
+    }
+
+    evaluateSequence(a: number, b: number, c: number, d: number): number {
+      let aiCount = 0;
+      let playerCount = 0;
+
+      [a, b, c, d].forEach(cell => {
+        if (cell === 2) aiCount++;
+        else if (cell === 1) playerCount++;
+      });
+
+      if (playerCount === 0) {
+        if (aiCount === 4) return 100;
+        if (aiCount === 3) return 5;
+        if (aiCount === 2) return 2;
+        if (aiCount === 1) return 1;
+      }
+      if (aiCount === 0) {
+        if (playerCount === 4) return -100;
+        if (playerCount === 3) return -5;
+        if (playerCount === 2) return -2;
+        if (playerCount === 1) return -1;
+      }
+      return 0;
+    }
+
+    getLowestEmptyRow(col: number): number {
+      let board = this.spielfeld;
+        if(board != undefined){
+        for (let row = 5; row >= 0; row--) {
+          if (board[row][col] === 0) return row;
+        }
+      }
+      return -1;
+
+  }
   }
 
