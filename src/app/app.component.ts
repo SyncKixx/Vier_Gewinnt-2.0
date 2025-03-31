@@ -34,7 +34,6 @@ export class AppComponent {
     else {
       console.error("HeaderComponent nicht gefunden!");
     }
-   // console.log(this.spielfeld);
     return;
   }
 
@@ -70,18 +69,17 @@ export class AppComponent {
       }
     }
     if(this.currentSpieler == 2 && !this.spielVorbei && this.gamemode == 1){
-      console.log("KI ist am Zug"+this.currentSpieler);
       let bestMove = this.findBestMove()
       let r = this.getLowestEmptyRow(bestMove);
       Tabelle?.children[r].children[bestMove].classList.add(this.aktuelleklasse+this.currentSpieler);
       this.spielfeld[this.getLowestEmptyRow(bestMove)][bestMove] = this.currentSpieler;
       if(this.checkWin(this.currentSpieler)){
         this.winner = this.currentSpieler;
+        console.log(this.spielfeld)
         this.spielVorbei = true;
       }
     }
     this.currentSpieler = 3 -this.currentSpieler;
-    console.log(this.spielfeld);
 
   }
 
@@ -93,9 +91,6 @@ export class AppComponent {
           this.spielfeld[row][col + 1] == player &&
           this.spielfeld[row][col + 2] == player &&
           this.spielfeld[row][col + 3] == player) {
-            console.log(row + " " + col);
-            console.log(this.spielfeld[row][col], this.spielfeld[row][col + 1], this.spielfeld[row][col + 2], this.spielfeld[row][col + 3]);
-            console.log("horizontal");
         return true;
       }
     }
@@ -108,7 +103,6 @@ export class AppComponent {
           this.spielfeld[row + 1][col] === player &&
           this.spielfeld[row + 2][col] === player &&
           this.spielfeld[row + 3][col] === player) {
-            console.log("vertikal");
         return true;
       }
     }
@@ -121,7 +115,6 @@ export class AppComponent {
           this.spielfeld[row + 2][col + 1] === player &&
           this.spielfeld[row + 1][col + 2] === player &&
           this.spielfeld[row][col + 3] === player) {
-            console.log("diagonal nach oben");
         return true;
       }
     }
@@ -134,7 +127,6 @@ export class AppComponent {
           this.spielfeld[row + 1][col + 1] === player &&
           this.spielfeld[row + 2][col + 2] === player &&
           this.spielfeld[row + 3][col + 3] === player) {
-            console.log("diagonal nach unten");
         return true;
       }
     }
